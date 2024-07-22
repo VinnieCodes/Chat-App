@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { StyleSheet, View, Text, Button, TextInput } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Button,
+  TextInput,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
 
 const Start = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -7,17 +15,48 @@ const Start = ({ navigation }) => {
   const [background, setBackground] = useState("");
   return (
     <View style={styles.container}>
-      <Text>Connect to Chat</Text>
-      <TextInput
-        style={styles.textInput}
-        value={name}
-        onChangeText={setName}
-        placeholder="Your Name"
-      />
-      <Button
-        title="Start Chatting"
-        onPress={() => navigation.navigate("Chat", { name: name })}
-      />
+      <ImageBackground
+        source={require("../img/BGimg.png")}
+        style={styles.imageBackground}
+      >
+        <Text style={styles.title}>Chat app</Text>
+        <View style={styles.box}>
+          {/* user types name */}
+          <TextInput
+            style={styles.textInput}
+            value={name}
+            onChangeText={setName}
+            placeholder="Your name"
+          />
+          <Text style={styles.chooseBgColor}>Choose Background Color</Text>
+          {/* user selects backgroung color */}
+          <View style={styles.colorButtonContainer}>
+            {colors.map((color, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.colorButton,
+                  { backgroundColor: color },
+                  background === color && styles.selectedColor,
+                ]}
+                onPress={() => setBackground(color)}
+              />
+            ))}
+          </View>
+          {/* to start chat */}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() =>
+              navigation.navigate("Chat", {
+                name: name,
+                background: background,
+              })
+            }
+          >
+            <Text style={styles.buttonText}>Start Chatting</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
     </View>
   );
 };
@@ -27,6 +66,28 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  imageBackground: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%",
+  },
+  title: {
+    flex: 1,
+    fontSize: 45,
+    fontWeight: "600",
+    color: "#FFFFFF",
+    margin: 25,
+  },
+  box: {
+    // backgroundColor: '#ffffff',
+    backgroundColor: "#f2f2f2",
+    width: "88%",
+    height: "50%",
+    alignItems: "center",
+    justifyContent: "space-around",
   },
   textInput: {
     width: "88%",
