@@ -7,6 +7,8 @@ import {
   TextInput,
   ImageBackground,
   TouchableOpacity,
+  KeyboardAvoidingView, 
+  Platform,
 } from "react-native";
 
 const Start = ({ navigation }) => {
@@ -29,11 +31,14 @@ const Start = ({ navigation }) => {
             placeholder="Your name"
           />
           <Text style={styles.chooseBgColor}>Choose Background Color</Text>
-          {/* user selects backgroung color */}
+          {/* user selects background color */}
           <View style={styles.colorButtonContainer}>
             {colors.map((color, index) => (
               <TouchableOpacity
                 key={index}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityHint="Lets you choose background color for your chat screen"
                 style={[
                   styles.colorButton,
                   { backgroundColor: color },
@@ -45,6 +50,9 @@ const Start = ({ navigation }) => {
           </View>
           {/* to start chat */}
           <TouchableOpacity
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityHint="Lets you choose to enter the chat room"
             style={styles.button}
             onPress={() =>
               navigation.navigate("Chat", {
@@ -56,6 +64,9 @@ const Start = ({ navigation }) => {
             <Text style={styles.buttonText}>Start Chatting</Text>
           </TouchableOpacity>
         </View>
+        {Platform.OS === "android" ? (
+          <KeyboardAvoidingView behavior="height" />
+        ) : null}
       </ImageBackground>
     </View>
   );
@@ -84,6 +95,7 @@ const styles = StyleSheet.create({
   box: {
     // backgroundColor: '#ffffff',
     backgroundColor: "#f2f2f2",
+    borderRadius: 4,
     width: "88%",
     height: "50%",
     alignItems: "center",
