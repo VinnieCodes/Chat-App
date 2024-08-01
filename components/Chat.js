@@ -8,8 +8,9 @@ import {
   query,
   orderBy,
 } from "firebase/firestore";
+import { AsyncStorage } from "@react-native-async-storage/async-storage";
 
-const Chat = ({ route, navigation, db }) => {
+const Chat = ({ route, navigation, db, isConnected }) => {
   const { username, background, userID } = route.params;
   const [messages, setMessages] = useState([]);
   const onSend = (newMessages) => {
@@ -33,34 +34,14 @@ const Chat = ({ route, navigation, db }) => {
   };
 
   const renderInputToolbar = (props) => {
-     return <InputToolbar {...props} />;
-
+    if (isConnected) return <InputToolbar {...props} />;
+    else return null;
   };
 
-  // useEffect(() => {
-  //   setMessages([
-  //     {
-  //       _id: 1,
-  //       text: "Hello developer",
-  //       createdAt: new Date(),
-  //       user: {
-  //         _id: 2,
-  //         name: "React Native",
-  //         avatar: "https://placeimg.com/140/140/any",
-  //       },
-  //     },
-  //     {
-  //       _id: 2,
-  //       text: "This is a system message",
-  //       createdAt: new Date(),
-  //       system: true,
-  //     },
-  //   ]);
-  // }, []);
+  // useEffect hook to set messages options
   let unsubMessages;
-
   useEffect(() => {
-    
+    if (isConnected === true) {
       // unregister current onSnapshot() listener to avoid registering multiple listeners when
       // useEffect code is re-executed.
       if (unsubMessages) unsubMessages();
@@ -79,18 +60,33 @@ const Chat = ({ route, navigation, db }) => {
             createdAt: new Date(doc.data().createdAt.toMillis()),
           });
         });
+        cacheMessages(newMessages);
         setMessages(newMessages);
       });
+    } else loadCachedMessages();
 
     // Clean up code
     return () => {
       if (unsubMessages) unsubMessages();
     };
-  });
+  }, [isConnected]); //isConnected used as a dependency value enabling the component to call the callback of useEffect whenewer the isConnected prop's value changes.
 
-  useEffect(() => {
-    navigation.setOptions({ title: username });
-  }, []);
+  const cacheMessages = async (messagesToCache) => {
+    try {
+      await AsyncStorage.setItem("messages", JSON.stringify(messagesToCache));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  // Call this function when isConnected prop turns out to be false in useEffect()
+  const loadCachedMessages = async () => {
+    // The empty array is for cachedMessages in case AsyncStorage() fails when the messages item hasn’t been set yet in AsyncStorage.
+    const cachedMessages = (await AsyncStorage.getItem("messages")) || [];
+    setMessages(JSON.parse(cachedMessages));
+  };
+
+  
 
   return (
     <View style={[styles.container, { backgroundColor: background }]}>
