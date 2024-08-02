@@ -15,25 +15,9 @@ import {
   disableNetwork,
   enableNetwork,
 } from "firebase/firestore";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC0sdtprb2blHCpKIk5iQZBmia_gRTsYGI",
-  authDomain: "the-chat-app-99d6b.firebaseapp.com",
-  projectId: "the-chat-app-99d6b",
-  storageBucket: "the-chat-app-99d6b.appspot.com",
-  messagingSenderId: "389755305798",
-  appId: "1:389755305798:web:cebfc76ffbd534b96fef47",
-};
-
-
-// Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-
-  // Initialize Cloud Firestore and get a reference to the service
-  const db = getFirestore(app);
+import { getStorage } from "firebase/storage";
 
 const Stack = createNativeStackNavigator();
-
 
 
 const App = () => {
@@ -51,6 +35,8 @@ const App = () => {
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
 
+  const storage = getStorage(app);
+
   const connectionStatus = useNetInfo();
 
   useEffect(() => {
@@ -67,7 +53,14 @@ const App = () => {
       <Stack.Navigator initialRoutName="Start">
         <Stack.Screen name="Start" component={Start} />
         <Stack.Screen name="Chat">
-          {(props) => <Chat db={db} {...props} />}
+          {(props) => (
+            <Chat
+              isConnected={connectionStatus.isConnected}
+              db={db}
+              storage={storage}
+              {...props}
+            />
+          )}
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
