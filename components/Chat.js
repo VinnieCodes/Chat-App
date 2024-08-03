@@ -9,7 +9,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { AsyncStorage } from "@react-native-async-storage/async-storage";
-import CustomActions from "./CustomActions";
+import CustomActions from "./customActions";
 import MapView from "react-native-maps";
 
 const Chat = ({ route, navigation, db, isConnected, storage }) => {
